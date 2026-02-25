@@ -3,13 +3,22 @@ import { Send, Menu, Plus, Sprout, User, Info, Paperclip, Settings, Search, Pane
 import './App.css';
 
 function App() {
+  const [isAppLoading, setIsAppLoading] = useState(true); // NEW: Loading state
   const [messages, setMessages] = useState([
     { role: 'bot', text: 'Ram Ram, Kisan bhai! I am KisanGPT. Ask me anything about crop seasons, fertilizers, or farm management.' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Default open on desktop
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
   const messagesEndRef = useRef(null);
+
+  // NEW: Initial Loading Screen Timer (2.5 seconds)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsAppLoading(false);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -45,8 +54,25 @@ function App() {
     }
   };
 
+  // --- NEW: The Loading Screen UI ---
+  if (isAppLoading) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-logo-container">
+          <Sprout size={64} color="#2E7D32" className="pulse-animation" />
+        </div>
+        <h1 className="loading-title">KisanGPT</h1>
+        <p className="loading-subtitle">Cultivating Knowledge...</p>
+        <div className="progress-bar-bg">
+          <div className="progress-bar-fill"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Notice the added "fade-in" class to app-container below!
   return (
-    <div className="app-container">
+    <div className="app-container fade-in">
       {/* --- Sidebar --- */}
       <aside className={`sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">
@@ -81,7 +107,6 @@ function App() {
 
       {/* --- Main Chat Area --- */}
       <main className="main-content">
-        {/* Top Header (Visible when sidebar is closed or on mobile) */}
         <header className="top-header">
           {!isSidebarOpen && (
             <button className="icon-btn open-sidebar-btn" onClick={() => setIsSidebarOpen(true)} title="Open Sidebar">
@@ -92,7 +117,6 @@ function App() {
           <div className="placeholder-spacer"></div>
         </header>
 
-        {/* Chat History */}
         <div className="chat-area">
           {messages.map((msg, index) => (
             <div key={index} className={`message-row ${msg.role}`}>
@@ -134,7 +158,6 @@ function App() {
         {/* Floating Input Area */}
         <div className="input-container">
           <form onSubmit={sendMessage} className="input-box">
-            {/* Upload File Icon */}
             <button type="button" className="action-btn upload-btn" title="Upload File (Coming Soon)">
               <Paperclip size={20} />
             </button>
@@ -147,7 +170,6 @@ function App() {
               disabled={isLoading}
             />
             
-            {/* Send Icon */}
             <button type="submit" disabled={isLoading || !input.trim()} className={`action-btn send-btn ${input.trim() ? 'active' : ''}`}>
               <Send size={18} />
             </button>
@@ -156,7 +178,6 @@ function App() {
         </div>
       </main>
       
-      {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && <div className="overlay" onClick={() => setIsSidebarOpen(false)}></div>}
     </div>
   );
