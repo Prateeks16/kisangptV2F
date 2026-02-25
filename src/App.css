@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+/* Warm Beige Background for the entire app */
+body, html { width: 100%; height: 100%; background-color: #FDFBF7; color: #3b423c; overflow: hidden; }
+
+.app-container { display: flex; height: 100vh; width: 100vw; position: relative; }
+
+/* --- Collapsible Sidebar (Warm Tone) --- */
+.sidebar { width: 260px; background-color: #F4EFE6; display: flex; flex-direction: column; flex-shrink: 0; transition: margin-left 0.3s ease; border-right: 1px solid #E5DCCB; z-index: 20; }
+.sidebar.closed { margin-left: -260px; }
+
+.sidebar-header { padding: 12px; display: flex; justify-content: flex-end; }
+.sidebar-nav { padding: 0 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+
+/* Sidebar Buttons */
+.nav-btn { display: flex; align-items: center; gap: 12px; padding: 12px; background: transparent; border: none; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: #4a5d4e; transition: background 0.2s; width: 100%; text-align: left; }
+.nav-btn:hover { background: #EAE3D5; }
+.new-chat-btn { background: #FFFFFF; border: 1px solid #E5DCCB; color: #2E7D32; font-weight: 600; margin-bottom: 10px; }
+.new-chat-btn:hover { background: #FDFBF7; }
+
+.sidebar-footer { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: #2E7D32; padding: 8px; border-top: 1px solid #E5DCCB; margin-top: 8px; }
+
+/* --- Main Content --- */
+.main-content { flex: 1; display: flex; flex-direction: column; position: relative; height: 100%; background-color: #FDFBF7; }
+
+/* Top Header */
+.top-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #FDFBF7; z-index: 10; height: 60px; }
+.hide-on-desktop { visibility: hidden; } /* Keeps spacing correct when sidebar is open */
+.icon-btn { background: transparent; border: none; cursor: pointer; display: flex; align-items: center; padding: 8px; border-radius: 6px; transition: background 0.2s; }
+.icon-btn:hover { background: #F4EFE6; }
+.top-header h2 { font-size: 1.1rem; font-weight: 600; color: #4a5d4e; }
+.placeholder-spacer { width: 40px; }
+
+/* --- Chat Area --- */
+.chat-area { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 120px; scroll-behavior: smooth; }
+
+.message-row { display: flex; justify-content: center; padding: 24px 16px; border-bottom: 1px solid transparent; }
+/* Bot background is a very soft warm grey/beige */
+.message-row.bot { background-color: #F8F5F0; border-bottom: 1px solid #E5DCCB; }
+
+.message-content-wrapper { max-width: 800px; width: 100%; display: flex; gap: 20px; }
+
+.avatar { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+/* Soft green user, rich green bot */
+.user .avatar { background-color: #6C8E71; }
+.bot .avatar { background-color: #2E7D32; }
+
+.message-text-block { flex: 1; line-height: 1.65; font-size: 1rem; color: #3b423c; padding-top: 4px; }
+.message-text-block strong { color: #1a241b; font-weight: 600; }
+
+/* Sources Styling */
+.sources-container { margin-top: 16px; padding: 12px 16px; background: #FFFFFF; border: 1px solid #E5DCCB; border-radius: 8px; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+.sources-title { display: flex; align-items: center; gap: 6px; font-weight: 600; color: #4a5d4e; margin-bottom: 8px; }
+.sources-container ul { margin-left: 24px; color: #666; }
+
+/* --- Floating Input Area --- */
+.input-container { position: absolute; bottom: 0; width: 100%; background: linear-gradient(180deg, rgba(253,251,247,0) 0%, #FDFBF7 30%); padding: 24px 16px 12px; display: flex; flex-direction: column; align-items: center; }
+.input-box { max-width: 800px; width: 100%; display: flex; align-items: center; background: #FFFFFF; border: 1px solid #D1CFC8; border-radius: 24px; padding: 8px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); transition: border-color 0.2s; gap: 8px; }
+.input-box:focus-within { border-color: #2E7D32; box-shadow: 0 4px 15px rgba(46, 125, 50, 0.08); }
+
+.input-box input { flex: 1; border: none; outline: none; padding: 10px 4px; font-size: 1rem; background: transparent; color: #3b423c; }
+.input-box input::placeholder { color: #9ca3af; }
+
+/* --- Input Buttons (Upload & Send) --- */
+.action-btn { 
+  background: transparent; 
+  border: none; 
+  width: 36px; 
+  height: 36px; 
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  cursor: pointer; 
+  transition: all 0.2s; 
+}
+
+/* Force the SVG icons to show their colors and keep their shape */
+.action-btn svg {
+  stroke-width: 2.5px;
+  stroke: currentColor;
+  fill: none;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* 1. Upload File Icon - Black */
+.upload-btn {
+  color: #000000; 
+}
+.upload-btn:hover {
+  background: #EAE3D5; 
+}
+
+/* 2. Send Icon - Beige when typing, Grey when empty */
+.send-btn {
+  color: #9ca3af; /* Grey arrow when empty */
+}
+
+/* When the user starts typing, the button turns Green and the Arrow turns Beige */
+.send-btn.active { 
+  background: #2E7D32; /* Green Circle */
+  color: #FDFBF7; /* Beige Arrow Icon */
+}
+
+.send-btn.active:hover { 
+  background: #1B5E20; 
+}
+.send-btn:disabled { 
+  cursor: not-allowed; 
+}
+
+/* Typing Animation */
+.loading-dots span { animation: blink 1.4s infinite both; font-weight: bold; font-size: 1.2rem; margin: 0 2px; }
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+  .sidebar { position: absolute; left: 0; height: 100%; margin-left: -260px; }
+  .sidebar.open { margin-left: 0; box-shadow: 4px 0 15px rgba(0,0,0,0.05); }
+  .hide-on-desktop { visibility: visible; }
+  .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.3); z-index: 15; backdrop-filter: blur(2px); }
+  .message-content-wrapper { gap: 12px; }
+  .input-box { border-radius: 20px; }
+}
