@@ -106,6 +106,101 @@ body, html { width: 100%; height: 100%; background-color: #FDFBF7; color: #3b423
 .new-chat-btn { background: #FFFFFF; border: 1px solid #E5DCCB; color: #2E7D32; font-weight: 600; margin-bottom: 10px; }
 .new-chat-btn:hover { background: #FDFBF7; }
 
+/* --- Sidebar History List Styles --- */
+.history-section {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden; 
+}
+
+.history-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8fa394;
+  margin-bottom: 8px;
+  padding-left: 12px;
+  font-weight: 600;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  max-height: calc(100vh - 250px);
+}
+
+.history-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+  background-color: #d1ddd4;
+  border-radius: 4px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #4a5d4e;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.history-item:hover {
+  background-color: #EAE3D5;
+}
+
+.history-item.active {
+  background-color: #EAE3D5;
+  color: #2E7D32;
+  font-weight: 600;
+}
+
+.history-icon {
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.history-text {
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+}
+
+/* Delete button hides by default, shows on hover */
+.delete-chat-btn {
+  background: none;
+  border: none;
+  color: #d32f2f;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.history-item:hover .delete-chat-btn {
+  opacity: 1;
+}
+
+.delete-chat-btn:hover {
+  background-color: rgba(211, 47, 47, 0.1);
+}
+
+/* Sidebar Footer */
 .sidebar-footer { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: #2E7D32; padding: 8px; border-top: 1px solid #E5DCCB; margin-top: 8px; }
 
@@ -137,7 +232,7 @@ body, html { width: 100%; height: 100%; background-color: #FDFBF7; color: #3b423
 .message-text-block { flex: 1; line-height: 1.65; font-size: 1rem; color: #3b423c; padding-top: 4px; }
 .message-text-block strong { color: #1a241b; font-weight: 600; }
 
-/* Sources Styling */
+/* Sources Styling (Kept in case you ever want to toggle it back on) */
 .sources-container { margin-top: 16px; padding: 12px 16px; background: #FFFFFF; border: 1px solid #E5DCCB; border-radius: 8px; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
 .sources-title { display: flex; align-items: center; gap: 6px; font-weight: 600; color: #4a5d4e; margin-bottom: 8px; }
 .sources-container ul { margin-left: 24px; color: #666; }
@@ -205,6 +300,67 @@ body, html { width: 100%; height: 100%; background-color: #FDFBF7; color: #3b423
 .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
 .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
+/* --- Input Buttons & Popup Menus --- */
+.input-action-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-menu {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  left: -8px;
+  background: #FFFFFF;
+  border: 1px solid #E5DCCB;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(46, 125, 50, 0.12);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 240px;
+  z-index: 50;
+  animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: bottom left;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.popup-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #4a5d4e;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.popup-item:hover {
+  background: #EAE3D5;
+  color: #2E7D32;
+}
+
+/* Tool Button specifics */
+.tool-btn {
+  color: #6C8E71; 
+}
+.tool-btn:hover {
+  background: #EAE3D5; 
+  color: #2E7D32;
+}
 
 /* --- Mobile Responsiveness --- */
 @media (max-width: 768px) {
@@ -214,4 +370,5 @@ body, html { width: 100%; height: 100%; background-color: #FDFBF7; color: #3b423
   .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.3); z-index: 15; backdrop-filter: blur(2px); }
   .message-content-wrapper { gap: 12px; }
   .input-box { border-radius: 20px; }
+  .history-item:hover .delete-chat-btn { opacity: 1; } /* Always show delete on mobile/touch if hovered or tapped */
 }
