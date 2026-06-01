@@ -1,10 +1,15 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { 
   Send, Plus, Sprout, User, Paperclip, Settings, Search, 
   PanelLeftClose, PanelLeft, Trash2, MessageSquare, 
-  Wrench, FileText, Upload, FlaskConical, Bug 
+  Wrench, FileText, Upload, FlaskConical, Bug, LogOut 
 } from 'lucide-react';
 import './App.css';
+import Auth from './components/Auth';
+
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://127.0.0.1:8000'
+  : 'https://kisangptv2.onrender.com';
 
 const generateId = () => Date.now().toString(36) + Math.random().toString(36).substr(2);
 
@@ -14,7 +19,10 @@ const defaultGreeting = {
 };
 
 function App() {
-  const [isAppLoading, setIsAppLoading] = useState(true); 
+  const [splashFinished, setSplashFinished] = useState(false);
+  const [token, setToken] = useState(() => localStorage.getItem('auth_token'));
+  const [user, setUser] = useState(null);
+  const [authChecking, setAuthChecking] = useState(true);
   
   const [sessions, setSessions] = useState(() => {
     const savedSessions = localStorage.getItem('kisangpt_sessions');
@@ -35,13 +43,49 @@ function App() {
   
   const messagesEndRef = useRef(null);
 
-  const activeSession = sessions.find(s => s.id === currentSessionId) || sessions[0];
-  const messages = activeSession ? activeSession.messages : [];
+  const activeSession = useMemo(() => sessions.find(s => s.id === currentSessionId) || sessions[0], [sessions, currentSessionId]);
+  const messages = useMemo(() => activeSession ? activeSession.messages : [], [activeSession]);
 
+  // Wait for both the splash timer and auth verification to complete
   useEffect(() => {
-    const timer = setTimeout(() => setIsAppLoading(false), 2500);
+    const timer = setTimeout(() => setSplashFinished(true), 2500);
     return () => clearTimeout(timer);
   }, []);
+
+  // Fetch authenticated user profile on initial load or token changes
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!token) {
+        setAuthChecking(false);
+        setUser(null);
+        return;
+      }
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/auth/me`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else if (response.status === 401) {
+          // Token expired or invalid
+          localStorage.removeItem('auth_token');
+          setToken(null);
+          setUser(null);
+        }
+      } catch (err) {
+        console.error('Error fetching user profile:', err);
+      } finally {
+        setAuthChecking(false);
+      }
+    };
+    fetchUser();
+  }, [token]);
+
+  const isAppLoading = !splashFinished || authChecking;
 
   useEffect(() => {
     localStorage.setItem('kisangpt_sessions', JSON.stringify(sessions));
@@ -113,19 +157,37 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://kisangptv2.onrender.com/api/v1/chat/ask', {
+      const response = await fetch(`${API_BASE_URL}/api/v1/chat/ask`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ query: userQuery, language: 'en' })
       });
+
+      if (response.status === 401) {
+        localStorage.removeItem('auth_token');
+        setToken(null);
+        setUser(null);
+        updateActiveSessionMessages([...updatedMessages, { role: 'bot', text: '⚠️ Session expired. Please sign in again to continue.' }]);
+        return;
+      }
 
       const data = await response.json();
       updateActiveSessionMessages([...updatedMessages, { role: 'bot', text: data.answer }]);
     } catch (error) {
+      console.error('Chat request error:', error);
       updateActiveSessionMessages([...updatedMessages, { role: 'bot', text: '⚠️ Error: Could not connect to the KisanGPT server.' }]);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    setToken(null);
+    setUser(null);
   };
 
   if (isAppLoading) {
@@ -141,6 +203,10 @@ function App() {
         </div>
       </div>
     );
+  }
+
+  if (!token || !user) {
+    return <Auth onLoginSuccess={(newToken) => setToken(newToken)} />;
   }
 
   return (
@@ -180,6 +246,24 @@ function App() {
         </div>
 
         <div className="sidebar-footer">
+          {user && (
+            <div className="user-profile-panel">
+              <div className="user-profile-info">
+                <div className="user-avatar-mini">
+                  {user.full_name ? user.full_name[0].toUpperCase() : 'U'}
+                </div>
+                <div className="user-details">
+                  <span className="user-name">{user.full_name || 'User'}</span>
+                  <span className="user-email">{user.email}</span>
+                </div>
+              </div>
+              <button className="logout-btn" onClick={handleLogout}>
+                <LogOut size={14} />
+                <span>Sign Out</span>
+              </button>
+            </div>
+          )}
+
           <button className="nav-btn">
             <Settings size={18} />
             <span>Settings</span>
